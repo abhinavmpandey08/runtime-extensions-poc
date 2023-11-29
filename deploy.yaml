@@ -1,0 +1,138 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: eksa-selfsigned-issuer
+  namespace: eksa-system
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: runtime-extensions-serving-cert
+  namespace: eksa-system
+spec:
+  dnsNames:
+  - runtime-extensions-webhook-service.eksa-system.svc
+  - runtime-extensions-poc.eksa-system.svc
+  - runtime-extensions-poc.eksa-system.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: eksa-selfsigned-issuer
+  secretName: runtime-extensions-server-cert
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  creationTimestamp: null
+  name: runtime-extensions
+  namespace: eksa-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  creationTimestamp: null
+  name: runtime-extensions-role
+  namespace: eksa-system
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - create
+  - list
+  - delete
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  creationTimestamp: null
+  name: runtime-extensions-binding
+  namespace: eksa-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: runtime-extensions-role
+subjects:
+- kind: ServiceAccount
+  name: runtime-extensions
+  namespace: eksa-system
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: runtime-extensions-webhook-service
+  namespace: eksa-system
+spec:
+  ports:
+  - port: 443
+    targetPort: 9443
+  selector:
+    app: runtime-extensions-poc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: runtime-extensions-poc
+  name: runtime-extensions-poc
+  namespace: eksa-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: runtime-extensions-poc
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: runtime-extensions-poc
+    spec:
+      containers:
+      - image: public.ecr.aws/t0n3a9y4/runtime-extensions-poc:latest3
+        name: runtime-extensions-poc
+        ports:
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
+        resources: {}
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: runtime-extensions-server-cert
+      serviceAccountName: runtime-extensions
+status: {}
+---
+apiVersion: runtime.cluster.x-k8s.io/v1alpha1
+kind: ExtensionConfig
+metadata:
+  annotations:
+    runtime.cluster.x-k8s.io/inject-ca-from-secret: eksa-system/runtime-extensions-server-cert
+  name: test-runtime-sdk-extensionconfig
+spec:
+  clientConfig:
+    service:
+      name: runtime-extensions-webhook-service
+      namespace: eksa-system # Note: this assumes the test extension get deployed in the eksa-system namespace
+      port: 443
+  namespaceSelector:
+    matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: In
+        values:
+          - eksa-system # Note: this assumes the test extension is used by Cluster in the eksa-system namespace only
+---

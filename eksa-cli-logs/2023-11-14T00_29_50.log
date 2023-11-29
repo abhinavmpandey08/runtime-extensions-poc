@@ -1,0 +1,72 @@
+{"L":"V6","T":"2023-11-14T00:29:50.649Z","M":"Executing command","cmd":"/usr/bin/docker version --format {{.Client.Version}}"}
+{"L":"V6","T":"2023-11-14T00:29:50.707Z","M":"Executing command","cmd":"/usr/bin/docker info --format '{{json .MemTotal}}'"}
+{"L":"V4","T":"2023-11-14T00:29:51.081Z","M":"Reading bundles manifest","url":"https://anywhere-assets.eks.amazonaws.com/releases/bundles/50/manifest.yaml"}
+{"L":"V4","T":"2023-11-14T00:29:51.169Z","M":"Using CAPI provider versions","Core Cluster API":"v1.5.2+aa5216f","Kubeadm Bootstrap":"v1.5.2+79ab319","Kubeadm Control Plane":"v1.5.2+f9414f0","External etcd Bootstrap":"v1.0.9+4c9d17a","External etcd Controller":"v1.0.14+500606a","Cluster API Provider Docker":"v1.5.2+251a1f3"}
+{"L":"V5","T":"2023-11-14T00:29:51.583Z","M":"Retrier:","timeout":"2562047h47m16.854775807s","backoffFactor":null}
+{"L":"V2","T":"2023-11-14T00:29:51.584Z","M":"Pulling docker image","image":"public.ecr.aws/eks-anywhere/cli-tools:v0.18.0-eks-a-50"}
+{"L":"V6","T":"2023-11-14T00:29:51.584Z","M":"Executing command","cmd":"/usr/bin/docker pull public.ecr.aws/eks-anywhere/cli-tools:v0.18.0-eks-a-50"}
+{"L":"V5","T":"2023-11-14T00:30:03.864Z","M":"Retry execution successful","retries":1,"duration":"12.280178901s"}
+{"L":"V3","T":"2023-11-14T00:30:03.864Z","M":"Initializing long running container","name":"eksa_1699921791583981849","image":"public.ecr.aws/eks-anywhere/cli-tools:v0.18.0-eks-a-50"}
+{"L":"V6","T":"2023-11-14T00:30:03.864Z","M":"Executing command","cmd":"/usr/bin/docker run -d --name eksa_1699921791583981849 --network host -w /home/abhnvp/runtime-extensions-poc -v /var/run/docker.sock:/var/run/docker.sock -v /home/abhnvp/runtime-extensions-poc:/home/abhnvp/runtime-extensions-poc -v /home/abhnvp/runtime-extensions-poc:/home/abhnvp/runtime-extensions-poc --entrypoint sleep public.ecr.aws/eks-anywhere/cli-tools:v0.18.0-eks-a-50 infinity"}
+{"L":"V4","T":"2023-11-14T00:30:04.830Z","M":"Task start","task_name":"setup-validate"}
+{"L":"V0","T":"2023-11-14T00:30:04.830Z","M":"Performing setup and validations"}
+{"L":"V0","T":"2023-11-14T00:30:04.830Z","M":"Warning: The docker infrastructure provider is meant for local development and testing only"}
+{"L":"V0","T":"2023-11-14T00:30:04.831Z","M":"✅ Docker Provider setup is valid"}
+{"L":"V0","T":"2023-11-14T00:30:04.831Z","M":"✅ Validate OS is compatible with registry mirror configuration"}
+{"L":"V0","T":"2023-11-14T00:30:04.831Z","M":"✅ Validate certificate for registry mirror"}
+{"L":"V0","T":"2023-11-14T00:30:04.831Z","M":"✅ Validate authentication for git provider"}
+{"L":"V0","T":"2023-11-14T00:30:04.831Z","M":"✅ Validate cluster's eksaVersion matches EKS-A version"}
+{"L":"V4","T":"2023-11-14T00:30:04.831Z","M":"Task finished","task_name":"setup-validate","duration":"714.706µs"}
+{"L":"V4","T":"2023-11-14T00:30:04.831Z","M":"----------------------------------"}
+{"L":"V4","T":"2023-11-14T00:30:04.831Z","M":"Task start","task_name":"bootstrap-cluster-init"}
+{"L":"V0","T":"2023-11-14T00:30:04.831Z","M":"Creating new bootstrap cluster"}
+{"L":"V4","T":"2023-11-14T00:30:04.832Z","M":"Creating kind cluster","name":"abhnvp-eks-a-cluster","kubeconfig":"abhnvp/generated/abhnvp.kind.kubeconfig"}
+{"L":"V6","T":"2023-11-14T00:30:04.832Z","M":"Executing command","cmd":"/usr/bin/docker exec -i eksa_1699921791583981849 kind create cluster --name abhnvp-eks-a-cluster --kubeconfig abhnvp/generated/abhnvp.kind.kubeconfig --image public.ecr.aws/eks-anywhere/kubernetes-sigs/kind/node:v1.24.17-eks-d-1-24-27-eks-a-50 --config abhnvp/generated/kind_tmp.yaml"}
+{"L":"V5","T":"2023-11-14T00:31:08.749Z","M":"Retrier:","timeout":"2562047h47m16.854775807s","backoffFactor":null}
+{"L":"V6","T":"2023-11-14T00:31:08.749Z","M":"Executing command","cmd":"/usr/bin/docker exec -i eksa_1699921791583981849 kubectl get namespace eksa-system --kubeconfig abhnvp/generated/abhnvp.kind.kubeconfig"}
+{"L":"V9","T":"2023-11-14T00:31:09.008Z","M":"docker","stderr":"Error from server (NotFound): namespaces \"eksa-system\" not found\n"}
+{"L":"V6","T":"2023-11-14T00:31:09.009Z","M":"Executing command","cmd":"/usr/bin/docker exec -i eksa_1699921791583981849 kubectl create namespace eksa-system --kubeconfig abhnvp/generated/abhnvp.kind.kubeconfig"}
+{"L":"V5","T":"2023-11-14T00:31:09.231Z","M":"Retry execution successful","retries":1,"duration":"481.937206ms"}
+{"L":"V0","T":"2023-11-14T00:31:09.231Z","M":"Provider specific pre-capi-install-setup on bootstrap cluster"}
+{"L":"V0","T":"2023-11-14T00:31:09.231Z","M":"Installing cluster-api providers on bootstrap cluster"}
+{"L":"V6","T":"2023-11-14T00:31:13.637Z","M":"Executing command","cmd":"/usr/bin/docker exec -i eksa_1699921791583981849 clusterctl init --core cluster-api:v1.5.2+aa5216f --bootstrap kubeadm:v1.5.2+79ab319 --control-plane kubeadm:v1.5.2+f9414f0 --infrastructure docker:v1.5.2+251a1f3 --config abhnvp/generated/clusterctl_tmp.yaml --bootstrap etcdadm-bootstrap:v1.0.9+4c9d17a --bootstrap etcdadm-controller:v1.0.14+500606a --kubeconfig abhnvp/generated/abhnvp.kind.kubeconfig"}
+{"L":"V5","T":"2023-11-14T00:31:46.733Z","M":"Retrier:","timeout":"30m0s","backoffFactor":null}
+{"L":"V6","T":"2023-11-14T00:31:46.733Z","M":"Executing command","cmd":"/usr/bin/docker exec -i eksa_1699921791583981849 kubectl wait --timeout 1800.00s --for=condition=Available deployments/cert-manager --kubeconfig abhnvp/generated/abhnvp.kind.kubeconfig -n cert-manager"}
+{"L":"V5","T":"2023-11-14T00:31:47.281Z","M":"Retry execution successful","retries":1,"duration":"548.47908ms"}
+{"L":"V5","T":"2023-11-14T00:31:47.281Z","M":"Retrier:","timeout":"30m0s","backoffFactor":null}
+{"L":"V6","T":"2023-11-14T00:31:47.282Z","M":"Executing command","cmd":"/usr/bin/docker exec -i eksa_1699921791583981849 kubectl wait --timeout 1800.00s --for=condition=Available deployments/cert-manager-cainjector --kubeconfig abhnvp/generated/abhnvp.kind.kubeconfig -n cert-manager"}
+{"L":"V5","T":"2023-11-14T00:31:47.767Z","M":"Retry execution successful","retries":1,"duration":"485.522731ms"}
+{"L":"V5","T":"2023-11-14T00:31:47.767Z","M":"Retrier:","timeout":"30m0s","backoffFactor":null}
+{"L":"V6","T":"2023-11-14T00:31:47.767Z","M":"Executing command","cmd":"/usr/bin/docker exec -i eksa_1699921791583981849 kubectl wait --timeout 1800.00s --for=condition=Available deployments/cert-manager-webhook --kubeconfig abhnvp/generated/abhnvp.kind.kubeconfig -n cert-manager"}
+{"L":"V5","T":"2023-11-14T00:31:48.332Z","M":"Retry execution successful","retries":1,"duration":"564.651426ms"}
+{"L":"V5","T":"2023-11-14T00:31:48.332Z","M":"Retrier:","timeout":"30m0s","backoffFactor":null}
+{"L":"V6","T":"2023-11-14T00:31:48.332Z","M":"Executing command","cmd":"/usr/bin/docker exec -i eksa_1699921791583981849 kubectl wait --timeout 1800.00s --for=condition=Available deployments/capi-kubeadm-bootstrap-controller-manager --kubeconfig abhnvp/generated/abhnvp.kind.kubeconfig -n capi-kubeadm-bootstrap-system"}
+{"L":"V5","T":"2023-11-14T00:31:49.213Z","M":"Retry execution successful","retries":1,"duration":"881.569721ms"}
+{"L":"V5","T":"2023-11-14T00:31:49.213Z","M":"Retrier:","timeout":"30m0s","backoffFactor":null}
+{"L":"V6","T":"2023-11-14T00:31:49.214Z","M":"Executing command","cmd":"/usr/bin/docker exec -i eksa_1699921791583981849 kubectl wait --timeout 1800.00s --for=condition=Available deployments/capi-kubeadm-control-plane-controller-manager --kubeconfig abhnvp/generated/abhnvp.kind.kubeconfig -n capi-kubeadm-control-plane-system"}
+{"L":"V5","T":"2023-11-14T00:31:54.043Z","M":"Retry execution successful","retries":1,"duration":"4.829598367s"}
+{"L":"V5","T":"2023-11-14T00:31:54.043Z","M":"Retrier:","timeout":"30m0s","backoffFactor":null}
+{"L":"V6","T":"2023-11-14T00:31:54.044Z","M":"Executing command","cmd":"/usr/bin/docker exec -i eksa_1699921791583981849 kubectl wait --timeout 1800.00s --for=condition=Available deployments/capi-controller-manager --kubeconfig abhnvp/generated/abhnvp.kind.kubeconfig -n capi-system"}
+{"L":"V5","T":"2023-11-14T00:31:54.401Z","M":"Retry execution successful","retries":1,"duration":"357.161266ms"}
+{"L":"V5","T":"2023-11-14T00:31:54.401Z","M":"Retrier:","timeout":"30m0s","backoffFactor":null}
+{"L":"V6","T":"2023-11-14T00:31:54.401Z","M":"Executing command","cmd":"/usr/bin/docker exec -i eksa_1699921791583981849 kubectl wait --timeout 1800.00s --for=condition=Available deployments/capd-controller-manager --kubeconfig abhnvp/generated/abhnvp.kind.kubeconfig -n capd-system"}
+{"L":"V5","T":"2023-11-14T00:32:01.063Z","M":"Retry execution successful","retries":1,"duration":"6.662615906s"}
+{"L":"V0","T":"2023-11-14T00:32:01.063Z","M":"Provider specific post-setup"}
+{"L":"V4","T":"2023-11-14T00:32:01.063Z","M":"Task finished","task_name":"bootstrap-cluster-init","duration":"1m56.231979959s"}
+{"L":"V4","T":"2023-11-14T00:32:01.063Z","M":"----------------------------------"}
+{"L":"V4","T":"2023-11-14T00:32:01.063Z","M":"Task start","task_name":"workload-cluster-init"}
+{"L":"V0","T":"2023-11-14T00:32:01.063Z","M":"Creating new workload cluster"}
+{"L":"V5","T":"2023-11-14T00:32:01.063Z","M":"Adding extraArgs","cipher-suites":"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"}
+{"L":"V5","T":"2023-11-14T00:32:01.063Z","M":"Adding extraArgs","tls-cipher-suites":"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"}
+{"L":"V5","T":"2023-11-14T00:32:01.063Z","M":"Adding extraArgs","tls-cipher-suites":"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"}
+{"L":"V5","T":"2023-11-14T00:32:01.063Z","M":"Adding extraArgs","cgroup-driver":"systemd"}
+{"L":"V5","T":"2023-11-14T00:32:01.064Z","M":"Adding extraArgs","tls-cipher-suites":"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"}
+{"L":"V5","T":"2023-11-14T00:32:01.066Z","M":"Adding extraArgs","tls-cipher-suites":"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"}
+{"L":"V5","T":"2023-11-14T00:32:01.066Z","M":"Adding extraArgs","cgroup-driver":"systemd"}
+{"L":"V5","T":"2023-11-14T00:32:01.066Z","M":"Retrier:","timeout":"2562047h47m16.854775807s","backoffFactor":null}
+{"L":"V6","T":"2023-11-14T00:32:01.067Z","M":"Executing command","cmd":"/usr/bin/docker exec -i eksa_1699921791583981849 kubectl apply -f - --namespace eksa-system --kubeconfig abhnvp/generated/abhnvp.kind.kubeconfig"}
+{"L":"V5","T":"2023-11-14T00:32:03.153Z","M":"Retry execution successful","retries":1,"duration":"2.086202281s"}
+{"L":"V3","T":"2023-11-14T00:32:03.153Z","M":"Waiting for control plane to be available"}
+{"L":"V5","T":"2023-11-14T00:32:03.153Z","M":"Retrier:","timeout":"1h0m0s","backoffFactor":null}
+{"L":"V6","T":"2023-11-14T00:32:03.154Z","M":"Executing command","cmd":"/usr/bin/docker exec -i eksa_1699921791583981849 kubectl wait --timeout 3600.00s --for=condition=ControlPlaneInitialized clusters.cluster.x-k8s.io/abhnvp --kubeconfig abhnvp/generated/abhnvp.kind.kubeconfig -n eksa-system"}
+{"L":"V0","T":"2023-11-14T00:32:29.549Z","M":"Warning: Terminating this operation may leave the cluster in an irrecoverable state"}
